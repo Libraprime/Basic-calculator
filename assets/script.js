@@ -18,7 +18,7 @@ for (let key of keys) {
             display_input.innerHTML = CleanInput(input);
         }
         else if (value == '=') {
-            let result = eval(input);
+            let result = eval(PrepareInput(input));
 
             display_output.innerHTML = CleanOutput(result);
         }
@@ -42,8 +42,10 @@ for (let key of keys) {
 
             display_input.innerHTML = CleanInput(input);
         } else {
-            input += value;
-            display_input.innerHTML = CleanInput(input);
+            if (validateInput(value)) {
+                input += value;
+                display_input.innerHTML = CleanInput(input);
+            }
         }
     })
 }
@@ -81,7 +83,7 @@ const CleanOutput = (output) => {
     let output_array = output_string.split("");
 
      if (output_array.length > 3) {
-        for (let i = output_array.length -3; i > 0; i -= 3) {
+        for (let i = output_array.length -3; i >= 0; i -= 3) {
             output_array.splice(i, 0, ",");
         }
     } 
@@ -92,4 +94,35 @@ const CleanOutput = (output) => {
     }
 
     return output_array.join("");
+}
+
+const validateInput = (value) => {
+    let last_input = input.slice(-1);
+    let operators = ["+", "-", "*", "/"]
+
+    if (value == "." && last_input == ".") {
+        return false;
+    }
+
+    if (operators.includes(value)) {
+        if (operators.includes(last_input)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    return true;
+}
+
+const PrepareInput = (input) => {
+    let input_array = input.split("")
+
+    for (let i = 0; i < input_array.length; i++) {
+        if (input_array[i] == "%") {
+            input_array[i] = "/100";
+        }
+    }
+
+    return input_array.join("");
 }
